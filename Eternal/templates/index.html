@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Gemini Chatbot</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      padding: 30px;
+      text-align: center;
+    }
+    #chat-box {
+      width: 60%;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      height: 400px;
+      overflow-y: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .message {
+      text-align: left;
+      margin: 10px 0;
+    }
+    .user {
+      font-weight: bold;
+      color: blue;
+    }
+    .bot {
+      font-weight: bold;
+      color: green;
+    }
+    #input-area {
+      margin-top: 20px;
+    }
+    #user-input {
+      width: 60%;
+      padding: 10px;
+      font-size: 16px;
+    }
+    #send-btn {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎙️ Gemini Chatbot</h1>
+  <div id="chat-box"></div>
+  <label for="mode-select">Choose Mode:</label>
+    <select id="mode-select">
+      <option value="Default">Default</option>
+      <option value="Motivation">Motivation</option>
+      <option value="Fatherly Love">Fatherly Love</option>
+      <option value="Sarcasm">Sarcasm</option>
+    </select>
+
+  <div id="input-area">
+    <input type="text" id="user-input" placeholder="Type your message here..." />
+    <button id="send-btn">Send</button>
+  </div>
+
+  <script>
+    document.getElementById('send-btn').onclick = async function () {
+      const input = document.getElementById('user-input').value;
+      if (!input) return;
+
+      const chatBox = document.getElementById('chat-box');
+      chatBox.innerHTML += `<div class="message user">You: ${input}</div>`;
+      document.getElementById('user-input').value = '';
+
+      try {
+        const response = await fetch('/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: input })
+        });
+
+        const data = await response.json();
+        const botReply = data.reply;
+
+        chatBox.innerHTML += `<div class="message bot">Gemini: ${botReply}</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+      } catch (err) {
+        console.error("Error:", err);
+        chatBox.innerHTML += `<div class="message bot">❌ Failed to get a response</div>`;
+      }
+    };
+  </script>
+</body>
+</html>
